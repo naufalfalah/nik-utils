@@ -1,0 +1,138 @@
+{
+  "32": {
+    "name": "Jawa Barat",
+    "districts": {
+      "3201": {
+        "name": "Kab. Bogor",
+        "subdistricts": {
+          "320101": "Cibinong",
+          "320102": "Gunung Putri",
+          "320103": "Citeureup",
+          "320104": "Sukaraja"
+          ""
+        }
+      },
+      "3202": {
+        "name": "Kab. Sukabumi",
+        "subdistricts": {
+          "320201": "Cicurug",
+          "320202": "Cibadak",
+          "320203": "Cisaat"
+        }
+      },
+      "3203": {
+        "name": "Kab. Cianjur",
+        "subdistricts": {}
+      },
+      "3204": {
+        "name": "Kab. Bandung",
+        "subdistricts": {}
+      },
+      "3205": {
+        "name": "Kab. Garut",
+        "subdistricts": {}
+      },
+      "3206": {
+        "name": "Kab. Tasikmalaya",
+        "subdistricts": {}
+      },
+      "3207": {
+        "name": "Kab. Ciamis",
+        "subdistricts": {}
+      },
+      "3208": {
+        "name": "Kab. Kuningan",
+        "subdistricts": {}
+      },
+      "3209": {
+        "name": "Kab. Cirebon",
+        "subdistricts": {}
+      },
+      "3210": {
+        "name": "Kab. Majalengka",
+        "subdistricts": {}
+      },
+      "3211": {
+        "name": "Kab. Sumedang",
+        "subdistricts": {}
+      },
+      "3212": {
+        "name": "Kab. Indramayu",
+        "subdistricts": {}
+      },
+      "3213": {
+        "name": "Kab. Subang",
+        "subdistricts": {}
+      },
+      "3214": {
+        "name": "Kab. Purwakarta",
+        "subdistricts": {}
+      },
+      "3215": {
+        "name": "Kab. Karawang",
+        "subdistricts": {}
+      },
+      "3216": {
+        "name": "Kab. Bekasi",
+        "subdistricts": {}
+      },
+      "3217": {
+        "name": "Kab. Bandung Barat",
+        "subdistricts": {}
+      },
+      "3218": {
+        "name": "Kab. Pangandaran",
+        "subdistricts": {}
+      },
+      "3271": {
+        "name": "Kota Bogor",
+        "subdistricts": {
+          "327101": "Bogor Utara",
+          "327102": "Bogor Selatan",
+          "327103": "Bogor Timur",
+          "327104": "Bogor Tengah",
+          "327105": "Bogor Barat",
+          "327106": "Tanah Sareal"
+        }
+      },
+      "3272": {
+        "name": "Kota Sukabumi",
+        "subdistricts": {}
+      },
+      "3273": {
+        "name": "Kota Bandung",
+        "subdistricts": {}
+      },
+      "3274": {
+        "name": "Kota Cirebon",
+        "subdistricts": {}
+      },
+      "3275": {
+        "name": "Kota Bekasi",
+        "subdistricts": {}
+      },
+      "3276": {
+        "name": "Kota Depok",
+        "subdistricts": {
+          "327601": "Beji",
+          "327602": "Bojongsari",
+          "327603": "Cilodong",
+          "327604": "Cimanggis",
+          "327605": "Sukmajaya"
+        }
+      },
+      "3277": {
+        "name": "Kota Cimahi",
+        "subdistricts": {}
+      },
+      "3278": {
+        "name": "Kota Tasikmalaya",
+        "subdistricts": {}
+      },
+      "3279": {
+        "name": "Kota Banjar",
+        "subdistricts": {}
+      }
+    }
+  }
+}
