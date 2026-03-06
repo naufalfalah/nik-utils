@@ -16,6 +16,9 @@ describe("NikParser", () => {
         expect(result.provinceCode).toBe("32");
         expect(result.cityCode).toBe("76");
         expect(result.districtCode).toBe("01");
+        expect(result.provinceName).toBe("JAWA BARAT");
+        expect(result.cityName).toBe("KOTA DEPOK");
+        expect(result.districtName).toBe("Pancoran Mas");
         expect(result.serialNumber).toBe("0001");
     });
 
@@ -48,7 +51,7 @@ describe("NikParser", () => {
         expect(NikParser.isValid("3276015203020001")).toBe(true);
         expect(NikParser.isValid("invalid_nik_123")).toBe(false);
     });
-    
+
     it("mask() should mask NIK correctly", () => {
         const masked = NikParser.mask("32 76 01 52 03 02 0001");
         expect(masked).toBe("************0001");

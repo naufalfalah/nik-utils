@@ -55,19 +55,15 @@ describe('NikGenerator', () => {
         expect(generatedDate <= end).toBe(true);
     });
 
-    it('should retry generating NIK if the first one is invalid', () => {
+    it('should throw error if the provided area is invalid', () => {
         const options = {
             gender: GENDER.MALE.code,
             birthDate: '2000-01-01',
-            provinceCode: '00', // Invalid province code
-            cityCode: '00',
-            districtCode: '00',
+            provinceCode: '99', // Invalid province code
+            cityCode: '99',
+            districtCode: '99',
         };
 
-        const nik = NikGenerator.generate(options);
-
-        // Assert that the NIK is valid despite invalid input
-        const parsed = NikGenerator.parse(nik);
-        expect(parsed.isValid).toBe(true);
+        expect(() => NikGenerator.generate(options)).toThrowError("Invalid area code combination provided in options");
     });
 });
