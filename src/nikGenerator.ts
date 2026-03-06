@@ -1,8 +1,9 @@
-import { NikParser  } from "./nikParser";
+import { NikParser } from "./nikParser";
 import { GENDER } from "./constants/common.constant";
+import { getRandomValidAreaCode, isValidArea } from "./utils/area.util";
 
 export interface GeneratedNikOptions {
-    gender?: keyof typeof GENDER;
+    gender?: keyof typeof GENDER | string;
     birthDate?: string;
     provinceCode?: string;
     cityCode?: string;
@@ -18,18 +19,24 @@ export class NikGenerator extends NikParser {
         return randomBirthDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
     }
 
-    static generate(options: GeneratedNikOptions): string {
+    static generate(options: GeneratedNikOptions = {}): string {
+        const randomArea = getRandomValidAreaCode();
+
         const {
-            provinceCode = '00',
-            cityCode = '00',
-            districtCode = '00',
+            provinceCode = randomArea.provinceCode,
+            cityCode = randomArea.cityCode,
+            districtCode = randomArea.districtCode,
             birthDate = this.getRandomBirthDate(),
-            gender = Math.random() < 0.5 ? GENDER.MALE : GENDER.FEMALE,
+            gender = Math.random() < 0.5 ? GENDER.MALE.code : GENDER.FEMALE.code,
         } = options;
+
+        if (!isValidArea(provinceCode, cityCode, districtCode)) {
+            throw new Error("Invalid area code combination provided in options");
+        }
 
         const [year, month, day] = birthDate.split('-').map(Number);
 
-        const genderDay = gender === GENDER.FEMALE.code ? day + 40 : day;
+        const genderDay = gender === GENDER.FEMALE.code || gender === 'FEMALE' ? day + 40 : day;
 
         const randomSerialNumber = Math.floor(Math.random() * 10000).toString().padStart(4, '0'); // 4 digit serial number
 
@@ -37,7 +44,7 @@ export class NikGenerator extends NikParser {
 
         const parsed = this.parse(randomNik);
         if (!parsed.isValid) {
-            return this.generate(options); // Retry if the generated NIK is invalid
+            return this.generate(options); // Retry if the generated NIK is invalid (e.g. invalid date combo)
         }
 
         return randomNik;

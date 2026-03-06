@@ -1,5 +1,6 @@
 import { GENDER } from "./constants/common.constant";
 import { ERROR } from "./constants/error.constant";
+import { isValidArea, getAreaNames } from "./utils/area.util";
 
 export interface ParsedNIK {
     nik: string;
@@ -9,6 +10,9 @@ export interface ParsedNIK {
     provinceCode: string;
     cityCode: string;
     districtCode: string;
+    provinceName: string | null;
+    cityName: string | null;
+    districtName: string | null;
     serialNumber: string;
 }
 
@@ -28,6 +32,9 @@ export class NikParser {
                 provinceCode: "",
                 cityCode: "",
                 districtCode: "",
+                provinceName: null,
+                cityName: null,
+                districtName: null,
                 serialNumber: "",
             };
         }
@@ -56,14 +63,20 @@ export class NikParser {
             birthDate.getMonth() === month - 1 &&
             birthDate.getDate() === actualDay;
 
+        const validArea = isValidArea(provinceCode, cityCode, districtCode);
+        const areaNames = getAreaNames(provinceCode, cityCode, districtCode);
+
         return {
             nik: cleaned,
-            isValid: isValidDate,
+            isValid: isValidDate && validArea,
             gender: isFemale ? GENDER.FEMALE.code : GENDER.MALE.code,
             birthDate: isValidDate ? birthDate : null,
             provinceCode,
             cityCode,
             districtCode,
+            provinceName: areaNames.provinceName,
+            cityName: areaNames.cityName,
+            districtName: areaNames.districtName,
             serialNumber,
         };
     }
