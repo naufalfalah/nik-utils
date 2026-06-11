@@ -1,25 +1,25 @@
-# 🇮🇩 NIK Utils
+# nik-utils
 
 [![npm version](https://badge.fury.io/js/nik-utils.svg)](https://badge.fury.io/js/nik-utils)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**NIK Utils** is a lightweight, zero-dependency, and isomorphic (Node.js & Browser compatible) TypeScript utility library that helps you validate, parse, mask, and generate Indonesian NIK (Nomor Induk Kependudukan) — the official 16-digit identification number.
+> Parse, validate, mask, and generate Indonesian NIK (Nomor Induk Kependudukan) — with built-in geographic verification against real Indonesian regional data.
 
-It includes a highly accurate, built-in directory of Indonesian regions (Provinces, Regencies/Cities, and Districts) to ensure that the NIKs actually map to real, legitimate geographic areas.
+## Why
 
----
+Every Indonesian citizen has a 16-digit national ID number (NIK) that encodes their province, city, district, gender, and birthdate. Validating one correctly means checking not just the format, but whether the embedded date is real and whether the region codes map to an actual place in Indonesia. `nik-utils` handles all of that in a single zero-dependency package that works in Node.js, Next.js, React, Vue, and any browser-based environment.
 
-## ✨ Features
+## Features
 
-- 🧠 **Parse NIK**: Extract gender, birth date, and precise region names (Province, City, District).
-- ✅ **Deep Validation**: Validates format, birthdate logic, and checks region codes against genuine Indonesian regional data.
-- 🔒 **Mask NIKs**: Securely mask NIK strings for logging or UI display.
-- 🎲 **Generate Valid NIKs**: Generate random yet 100% valid NIKs for testing and database seeding purposes.
-- 🌐 **Isomorphic**: Runs perfectly on server environments (Node.js) and client web frameworks (Next.js, React, Vue, Vite, etc).
+- **Parse** a NIK into structured data: gender, birth date, province, city, and district names
+- **Validate** deeply — format, date logic, and region authenticity against a built-in Indonesian geographic dataset
+- **Mask** a NIK for safe display in logs or UI, exposing only the 4-digit serial number
+- **Generate** fully valid, randomized NIKs for testing and database seeding — with optional constraints on gender, birth date, and region
+- **Whitespace-tolerant** — strips spaces automatically, so `"32 76 01 12 03 02 0001"` parses cleanly
+- **Zero dependencies** — no runtime packages required
+- **Isomorphic** — works in Node.js and all modern browsers
 
----
-
-## 📥 Installation
+## Installation
 
 ```bash
 npm install nik-utils
@@ -29,113 +29,144 @@ yarn add nik-utils
 pnpm add nik-utils
 ```
 
----
-
-## 🚀 Usage
-
-### 1. Parsing a NIK (`NikParser.parse`)
-
-Extract comprehensive information from a given NIK string. It ignores whitespaces automatically.
+## Usage
 
 ```typescript
-import { NikParser } from 'nik-utils';
+import { NikParser, NikGenerator } from 'nik-utils';
 
-const parsed = NikParser.parse('3276011203020001');
-console.log(parsed);
+// Parse a NIK
+const result = NikParser.parse('3276011203020001');
+console.log(result);
+// {
+//   nik: '3276011203020001',
+//   isValid: true,
+//   gender: 'MALE',
+//   birthDate: 2002-03-12T00:00:00.000Z,
+//   provinceCode: '32',   provinceName: 'JAWA BARAT',
+//   cityCode: '76',       cityName: 'KOTA DEPOK',
+//   districtCode: '01',   districtName: 'Pancoran Mas',
+//   serialNumber: '0001'
+// }
 
-/*
-Output:
-{
-  nik: '3276011203020001',
-  isValid: true,
-  gender: 'MALE', 
-  birthDate: 2002-03-12T00:00:00.000Z, // Date Object
+// Validate
+NikParser.isValid('3276011203020001'); // true
+NikParser.isValid('9999999999999999'); // false
+
+// Mask for safe display
+NikParser.mask('3276011203020001'); // '************0001'
+
+// Generate a fully random valid NIK
+const nik = NikGenerator.generate();
+
+// Generate with constraints
+const customNik = NikGenerator.generate({
+  gender: 'FEMALE',
+  birthDate: '1995-08-17',  // YYYY-MM-DD
   provinceCode: '32',
   cityCode: '76',
   districtCode: '01',
-  provinceName: 'JAWA BARAT',
-  cityName: 'KOTA DEPOK',
-  districtName: 'Pancoran Mas',
-  serialNumber: '0001'
-}
-*/
-```
-
-### 2. Validating a NIK (`NikParser.isValid`)
-
-Simply returns a boolean indicating whether the NIK is valid. It verifies length, algorithmic date correctness, and region authenticity.
-
-```typescript
-import { NikParser } from 'nik-utils';
-
-const isValid = NikParser.isValid('3276011203020001'); // true
-const isFake = NikParser.isValid('9999999999999999'); // false
-```
-
-### 3. Masking a NIK (`NikParser.mask`)
-
-Masks the first 12 digits, exposing only the 4-digit serial number. Throws an error if the NIK format is invalid.
-
-```typescript
-import { NikParser } from 'nik-utils';
-
-const masked = NikParser.mask('3276011203020001'); 
-// "************0001"
-```
-
-### 4. Generating a NIK (`NikGenerator.generate`)
-
-Generates a fully valid, randomized NIK. Extremely useful for unit testing or seeding dummy data. You can pass options, or let it fully randomize everything (including a valid geographical area).
-
-```typescript
-import { NikGenerator } from 'nik-utils';
-
-// Fully random NIK
-const randomNik = NikGenerator.generate();
-
-// Generate NIK with specific criteria
-const customNik = NikGenerator.generate({
-    gender: 'FEMALE',       // 'FEMALE' or 'MALE'
-    birthDate: '1995-08-17',    // YYYY-MM-DD format
-    provinceCode: '32',         // Jawa Barat
-    cityCode: '76',             // Kota Depok
-    districtCode: '01',         // Pancoran Mas
 });
 ```
 
-> **Note:** If you pass specific region codes, they must be a valid combination in Indonesia, otherwise the generator will throw an error to prevent generating broken NIKs.
+## API Reference
 
----
+### `NikParser.parse(nik: string): ParsedNIK`
 
-## 🏗️ Return Types
+Parses a NIK string into structured data. Strips whitespace automatically. Always returns a `ParsedNIK` object — check `isValid` to determine whether the NIK is legitimate.
 
-**`ParsedNIK`**
 ```typescript
-interface ParsedNIK {
-    nik: string;
-    isValid: boolean;
-    gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
-    birthDate: Date | null;
-    provinceCode: string;
-    cityCode: string;
-    districtCode: string;
-    provinceName: string | null;
-    cityName: string | null;
-    districtName: string | null;
-    serialNumber: string;
-}
+NikParser.parse('3276011203020001');
+// → { isValid: true, gender: 'MALE', birthDate: Date, provinceName: 'JAWA BARAT', ... }
+
+NikParser.parse('123'); // too short
+// → { isValid: false, gender: 'UNKNOWN', birthDate: null, ... }
 ```
 
 ---
 
-## 🧑‍💻 Contributing
+### `NikParser.isValid(nik: string): boolean`
 
-Contributions are welcome! If you find bugs or have feature requests, feel free to open an issue or submit a pull request on the repository.
+Returns `true` if the NIK passes format, date, and geographic validation.
 
-1. Clone the repository
+```typescript
+NikParser.isValid('3276011203020001'); // true
+NikParser.isValid('9999999999999999'); // false
+```
+
+---
+
+### `NikParser.mask(nik: string): string`
+
+Masks the first 12 digits, keeping only the 4-digit serial number visible. Throws if the NIK is invalid.
+
+```typescript
+NikParser.mask('3276011203020001'); // '************0001'
+NikParser.mask('invalid');          // throws Error('Invalid NIK Format')
+```
+
+---
+
+### `NikGenerator.generate(options?: GeneratedNikOptions): string`
+
+Generates a 16-character NIK that passes full validation. All options are optional — omitting any field randomizes that component.
+
+| Option | Type | Description |
+|---|---|---|
+| `gender` | `'MALE' \| 'FEMALE'` | Encodes gender into the birth day digit |
+| `birthDate` | `string` | Birth date in `YYYY-MM-DD` format |
+| `provinceCode` | `string` | 2-digit province code |
+| `cityCode` | `string` | 2-digit city/regency code |
+| `districtCode` | `string` | 2-digit district code |
+
+Throws if the provided region code combination does not exist in Indonesian regional data.
+
+```typescript
+NikGenerator.generate();
+// → '3201011505900042'  (random each time)
+
+NikGenerator.generate({ gender: 'FEMALE', birthDate: '1990-06-15' });
+// → a valid NIK with day digit > 40 and birth year 90
+```
+
+---
+
+### `NikGenerator.getRandomBirthDate(): string`
+
+Returns a random date string (`YYYY-MM-DD`) between 17 August 1945 and today.
+
+```typescript
+NikGenerator.getRandomBirthDate(); // '1978-04-23'
+```
+
+---
+
+### `ParsedNIK` interface
+
+```typescript
+interface ParsedNIK {
+  nik: string;
+  isValid: boolean;
+  gender: 'MALE' | 'FEMALE' | 'UNKNOWN';
+  birthDate: Date | null;
+  provinceCode: string;
+  cityCode: string;
+  districtCode: string;
+  provinceName: string | null;
+  cityName: string | null;
+  districtName: string | null;
+  serialNumber: string;
+}
+```
+
+## Contributing
+
+1. Fork the repository and clone it locally
 2. Install dependencies: `npm install`
-3. Run tests before submitting PR: `npm run test`
+3. Make your changes in `src/`
+4. Run the test suite before opening a PR: `npm test`
 
-## 📄 License
+Bug reports and feature requests are welcome via GitHub Issues.
 
-This project is licensed under the MIT License.
+## License
+
+MIT — see [LICENSE](https://opensource.org/licenses/MIT) for details.
