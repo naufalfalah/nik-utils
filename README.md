@@ -1,6 +1,7 @@
 # nik-utils
 
 [![npm version](https://badge.fury.io/js/nik-utils.svg)](https://badge.fury.io/js/nik-utils)
+[![CI](https://github.com/naufalfalah/nik-utils/actions/workflows/ci.yml/badge.svg)](https://github.com/naufalfalah/nik-utils/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > Parse, validate, mask, and generate Indonesian NIK (Nomor Induk Kependudukan) — with built-in geographic verification against real Indonesian regional data.
@@ -158,7 +159,20 @@ interface ParsedNIK {
 }
 ```
 
+## Key Technical Decisions
+
+**`parse()` returns a result object instead of throwing; `mask()` throws.**
+`NikParser.parse()` always returns a `ParsedNIK` with `isValid: false` on bad input rather than raising an error. This makes the common case — validating user-submitted data — a single call plus an `if (result.isValid)` check, with no `try/catch` needed. `mask()` throws instead, because a masked NIK is usually rendered directly into logs or UI; silently returning a garbage string for invalid input is more dangerous than a hard failure at the call site. The cost: callers of `parse()` must remember to check `isValid` on every call instead of relying on exceptions to catch mistakes.
+
+**`NikGenerator.generate()` builds a candidate NIK and retries on failure, rather than only ever constructing a guaranteed-valid one directly.** Region codes and calendar dates interact in ways that are easy to get wrong (e.g. day 31 in a 30-day month, once the female offset is subtracted back out). Generating a candidate, running it through the same `parse()` used for validation, and recursing on failure reuses one code path as the single source of truth for "what counts as valid," instead of duplicating that logic in two places. The trade-off is a small, usually-unbounded-in-theory recursion — in practice it converges in one or two tries, but a pathological `birthDate`/region combination that's always invalid would loop indefinitely.
+
+**Region data ships as a nested JSON object, keyed by concatenated codes, bundled into the package.** `area.json` is loaded into memory and looked up by direct key access (`areaData[provinceCode].districts[kabCode]...`) rather than queried from a database or scanned as a flat array. This keeps the package zero-dependency and usable offline or in the browser, with O(1) lookups. The trade-off is bundle size (the dataset ships with every install) and staleness — if Indonesia's administrative regions change, the data only updates when the package does.
+
 ## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development workflow (setup, tests, linting, commit style).
+
+Quick start:
 
 1. Fork the repository and clone it locally
 2. Install dependencies: `npm install`
@@ -167,6 +181,10 @@ interface ParsedNIK {
 
 Bug reports and feature requests are welcome via GitHub Issues.
 
+## Data provenance
+
+`src/data/area.json` (the province/city/district dataset used for parsing and validation) was generated once from a raw CSV of Indonesian administrative regions via a one-off conversion script. Both inputs were removed from the repo after generation since they aren't needed at runtime or build time.
+
 ## License
 
-MIT — see [LICENSE](https://opensource.org/licenses/MIT) for details.
+MIT — see [LICENSE](LICENSE) for details.
